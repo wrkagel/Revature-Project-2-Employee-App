@@ -9,16 +9,7 @@ import LoginPage from "./components/login-page";
 import OrdersPage from "./components/orders-page";
 import ProblemsPage from "./components/problems-page";
 import Employee from "./models/employee";
-
-
-
-export const CurrentUserContext = createContext({
-  id: 0,
-  isManager: false,
-  fname: "",
-  lname: "",
-  username: ""
-})
+import CurrentUserContext from "./contexts/current-user-context";
 
 export default function App() {
 
@@ -55,6 +46,8 @@ export default function App() {
     </NavigationContainer>
   )}
   </CurrentUserContext.Provider>
+
+  <StatusBar/>
   </>);
 }
 
