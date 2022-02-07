@@ -1,39 +1,58 @@
-import { Button, Text, View } from "react-native";
+import AsyncStorageLib from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Button, Text, TextInput, View } from "react-native";
 import Employee from "../models/employee";
 
 
-export default function LoginPage(props:{setCurrentUser: Function, setShowLogin: Function}){
 
-    const debugEmployee: Employee = {
-        id: 0,
-        isManager: false,
-        fname: "",
-        lname: "",
-        username: "Basic Boy"
-    }
-    const debugManager: Employee = {
-        id: 0,
-        isManager: true,
-        fname: "",
-        lname: "",
-        username: "Man E. Ger"
-    }
+export default function LoginPage(props: { setCurrentUser: Function, setShowLogin: Function }) {
 
-    function loginEmployee(){
-        props.setCurrentUser(debugEmployee)
-        alert(`Logged in: ${debugEmployee.username}`)
-        props.setShowLogin(false);
-    }
-    function loginManager(){
-        props.setCurrentUser(debugManager)
-        alert(`Logged in: ${debugManager.username}`)
-        props.setShowLogin(false);
-    }
+    const [usernameInput, setUsernameInput] = useState("");
+    const [passwordInput, setPasswordInput] = useState("");
+    const [submit, setSubmit] = useState<{}>();
 
-    return(<View>
+
+    useEffect(() => {
+        (async () => {            
+            if (!submit) return;
+
+            const loginPayload = { username: usernameInput, password: passwordInput }
+            const response = await axios.patch<Employee>("http://20.72.189.253:3000/login", loginPayload)
+                .then((r) => r)
+                .catch((error) => {
+                    let message = "";
+                    if (error.response) {
+                        message += error.response.data;
+                    }
+                    if (error.message) {
+                        message += `\n${error.message}`;
+                    }
+                    alert(message);
+                });
+
+            if (response && response.status === 200) {
+                AsyncStorageLib.setItem("user", JSON.stringify(response.data));
+                props.setCurrentUser(response.data);
+                props.setShowLogin(false);
+            }
+
+        })()
+    }, [submit])
+
+    return (<View>
         <Text>Login Page</Text>
-
-        <Button title="Log-In Employee" onPress={loginEmployee} />
-        <Button title="Log-In Manager" onPress={loginManager} />
+        <TextInput
+            placeholder="username"
+            onChangeText={(value) => setUsernameInput(value)}
+            autoCapitalize={"none"}
+        />
+        <TextInput
+            secureTextEntry
+            placeholder="password"
+            onChangeText={(value) => setPasswordInput(value)}
+            autoCapitalize={"none"}
+        />
+        <Button title="Log-In" onPress={()=>setSubmit({...submit})} />
     </View>)
 }
