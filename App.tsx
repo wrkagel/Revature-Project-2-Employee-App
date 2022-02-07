@@ -29,7 +29,7 @@ export default function App() {
     (async () => {
       const storedUser: Employee = JSON.parse(await AsyncStorageLib.getItem("user") ?? "");
       if (storedUser){
-        setCurrentUser(storedUser)
+        setCurrentUser(storedUser);
         setShowLogin(false);
       }
     })()
@@ -50,8 +50,8 @@ export default function App() {
           }} />
         }
       }}>
-        <Tab.Screen name="Events" component={EventsPage}/>
         <Tab.Screen name="Check-In" component={CheckInPage}/>
+        <Tab.Screen name="Events" component={EventsPage}/>
         <Tab.Screen name="Orders" component={OrdersPage}/>
 
         {/* THESE WILL ONLY BE RENDERED WHEN A MANAGER IS LOGGED IN */}

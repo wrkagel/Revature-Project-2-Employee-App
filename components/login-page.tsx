@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button, Text, TextInput, View } from "react-native";
 import Employee from "../models/employee";
+import EmployeeRoutes from "../routes/employee-routes";
 
 
 
@@ -18,18 +19,7 @@ export default function LoginPage(props: { setCurrentUser: Function, setShowLogi
             if (!submit) return;
 
             const loginPayload = { username: usernameInput, password: passwordInput }
-            const response = await axios.patch<Employee>("http://20.72.189.253:3000/login", loginPayload)
-                .then((r) => r)
-                .catch((error) => {
-                    let message = "";
-                    if (error.response) {
-                        message += error.response.data;
-                    }
-                    if (error.message) {
-                        message += `\n${error.message}`;
-                    }
-                    alert(message);
-                });
+            const response = await EmployeeRoutes.logIn(loginPayload);
 
             if (response && response.status === 200) {
                 AsyncStorageLib.setItem("user", JSON.stringify(response.data));

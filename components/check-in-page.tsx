@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Button, FlatList, Text, View } from "react-native";
+import { Alert, Button, FlatList, Text, View } from "react-native";
 import CurrentUserContext from "../contexts/current-user-context";
 import WorkLog from "../models/worklog";
+import EmployeeRoutes from "../routes/employee-routes";
 
 
 export default function CheckInPage(){
@@ -15,27 +16,28 @@ export default function CheckInPage(){
 
     useEffect(()=>{
         (async ()=> {
-            const response = await axios.get<WorkLog[]>(`http://20.72.189.253:3000/employees/${user.id}/worklogs`)
-            .then((r) => r)
-            .catch((error) => {
-            let message = "";
-            if(error.response) {
-                message += error.response.data;
-            }
-            if(error.message) {
-                message += `\n${error.message}`;
-            }
-            alert(message);
-            });
+            const response = await EmployeeRoutes.getWorkLogs(user.id);
 
             if (response && response.status === 200){
                 const savedWorkLogs: WorkLog[] = response.data;
                 savedWorkLogs.sort((w1, w2) => {
-                    return w2.timestamp - w1.timestamp;
+                    const d1 = new Date(w1.timestamp).valueOf();
+                    const d2 = new Date(w2.timestamp).valueOf();
+                    return d2 - d1;
                 })
                 setWorkLogs(savedWorkLogs);
+                let savedStatus = status;
                 if (savedWorkLogs.length > 0) {
+                    savedStatus = savedWorkLogs[0].action
                     setStatus(savedWorkLogs[0].action);
+                }
+                if ( savedStatus === "CHECKOUT"){
+                    
+                    Alert.alert("Not Checked In", "You are not checked in: would you like to check in now?", [
+                        {text:"Check-In", onPress: ()=>setSubmit({...submit})},
+                        {text:"Not now", style: "cancel"}
+                    ]                    
+                    )
                 }
             }
         })()
@@ -46,18 +48,7 @@ export default function CheckInPage(){
         (async ()=> {
             const submission: {action: "CHECKIN" | "CHECKOUT"} = {action: status === "CHECKIN" ? "CHECKOUT" : "CHECKIN"};
 
-            const response = await axios.post(`http://20.72.189.253:3000/employees/${user.id}/worklogs`, submission)
-            .then((r) => r)
-            .catch((error) => {
-            let message = "";
-            if(error.response) {
-                message += error.response.data;
-            }
-            if(error.message) {
-                message += `\n${error.message}`;
-            }
-            alert(message);
-            });
+            const response = await EmployeeRoutes.checkInOut(user.id, submission);
 
             if (response && response.status === 200){
                 submission.action === "CHECKIN" ? alert("Successfully checked in!") : alert("Successfully checked out!");
