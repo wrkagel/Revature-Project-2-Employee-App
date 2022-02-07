@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
-import { createContext, useState } from "react";
-import { StyleSheet, StatusBar } from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, StatusBar, Button } from "react-native";
 import CheckInPage from "./components/check-in-page";
 import EmployeeStatusPage from "./components/employee-status-page";
 import EventsPage from "./components/events-page";
@@ -10,6 +10,7 @@ import OrdersPage from "./components/orders-page";
 import ProblemsPage from "./components/problems-page";
 import Employee from "./models/employee";
 import CurrentUserContext from "./contexts/current-user-context";
+import AsyncStorageLib from "@react-native-async-storage/async-storage";
 
 export default function App() {
 
@@ -24,13 +25,31 @@ export default function App() {
     username: ""
   });
 
+  useEffect(()=>{
+    (async () => {
+      const storedUser: Employee = JSON.parse(await AsyncStorageLib.getItem("user") ?? "");
+      if (storedUser){
+        setCurrentUser(storedUser)
+        setShowLogin(false);
+      }
+    })()
+
+  }, [])
+
   return (<>
   <CurrentUserContext.Provider value={currentUser}>
     {showLogin ? (
       <LoginPage setShowLogin={setShowLogin} setCurrentUser={setCurrentUser} />
     ) : (
     <NavigationContainer>
-      <Tab.Navigator>
+      <Tab.Navigator screenOptions={{
+        headerRight: () => {
+          return <Button title="Logout" onPress={async () => {
+            await AsyncStorageLib.removeItem("user");
+            setShowLogin(true);
+          }} />
+        }
+      }}>
         <Tab.Screen name="Events" component={EventsPage}/>
         <Tab.Screen name="Check-In" component={CheckInPage}/>
         <Tab.Screen name="Orders" component={OrdersPage}/>
