@@ -71,7 +71,7 @@ export default function CheckInPage(){
             data = {workLogs}
             renderItem={(item)=><View style={styles.actionItem}>
                 <Text style={styles.actionItemText}>{new Date(item.item.timestamp).toLocaleString()}</Text>
-                <Text style={styles.actionItemText}>{item.item.action === "CHECKIN" ? "Checked In     " : "Checked Out"}</Text>
+                <Text style={styles.actionItemText}>{item.item.action === "CHECKIN" ? "Checked In   " : "Checked Out"}</Text>
             </View>}
         />
 
