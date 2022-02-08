@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from "axios";
 import axiosErrorHandler from "../error-handlers/axios-error-handler";
-import Activity from "../models/activity";
 import ServiceRequest from "../models/service-request";
 
 
@@ -14,7 +13,11 @@ export default class OrderRoutes{
         .catch((error) => axiosErrorHandler(error));
     }
 
-
+    public static async updateOrder(order:ServiceRequest): Promise<AxiosResponse<ServiceRequest> | void> {
+        return axios.patch(`${this.address}/servicerequests/${order.id}`, {status:order.status})
+        .then(response => response)
+        .catch((error) => axiosErrorHandler(error));
+    }
 
 
 
