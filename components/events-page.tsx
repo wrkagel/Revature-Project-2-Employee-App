@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList, Button, Pressable, Text } from "react-native"
+import { View, StyleSheet, FlatList, Pressable, Text } from "react-native"
 import Activity from "../models/activity";
 import EventRoutes from "../routes/event-routes";
 import EventCreationForm from "./event-creation-form";
@@ -24,8 +24,8 @@ export default function EventsPage(){
         <FlatList style={{flex:0.9}}
             keyExtractor={item => item.id}
             data={events}
-            renderItem={({item}) => (
-                <EventLineItem {...item}/>
+            renderItem={({item, index}) => (
+                <EventLineItem {...item} events={events} setEvents={setEvents} index={index}/>
             )}
         />
         <View style={{flex:0.1}}>
@@ -33,7 +33,11 @@ export default function EventsPage(){
                 <Text style={{textAlign:"center", fontSize:20}}>Create Event</Text>
             </Pressable>
         </View>
-        {showCreate && <EventCreationForm setShowCreate={setShowCreate}/>}
+        {showCreate && <EventCreationForm 
+            setShowCreate={setShowCreate} 
+            events={events} 
+            setEvents={setEvents}
+        />}
         
     </View>)
 }
