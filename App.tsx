@@ -27,14 +27,17 @@ export default function App() {
 
   useEffect(()=>{
     (async () => {
-      const storedUser: Employee = JSON.parse(await AsyncStorageLib.getItem("user") ?? "");
-      if (storedUser){
-        setCurrentUser(storedUser);
-        setShowLogin(false);
+      try {
+        const storedUser: Employee = JSON.parse(await AsyncStorageLib.getItem("user") ?? "");
+        if (storedUser){
+          setCurrentUser(storedUser);
+          setShowLogin(false);
+        }
+      } catch (error) {
+        alert('Error retrieving stored login information. Please login again.');
       }
-    })()
-
-  }, [])
+    })();
+  }, []);
 
   return (<>
   <CurrentUserContext.Provider value={currentUser}>
