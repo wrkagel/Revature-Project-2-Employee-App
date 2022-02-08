@@ -34,7 +34,9 @@ export default function App() {
           setShowLogin(false);
         }
       } catch (error) {
-        alert('Error retrieving stored login information. Please login again.');
+        if(error instanceof Error) {
+          console.log(error.message);
+        }
       }
     })();
   }, []);
