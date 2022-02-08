@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Alert, Button, FlatList, Text, View } from "react-native";
+import { Alert, Button, FlatList, StyleSheet, Text, View } from "react-native";
 import CurrentUserContext from "../contexts/current-user-context";
 import WorkLog from "../models/worklog";
 import EmployeeRoutes from "../routes/employee-routes";
@@ -52,6 +52,8 @@ export default function CheckInPage(){
 
             if (response && response.status === 200){
                 submission.action === "CHECKIN" ? alert("Successfully checked in!") : alert("Successfully checked out!");
+                workLogs.splice(0, 0, response.data);
+                setWorkLogs([...workLogs]);
                 setStatus(submission.action);
             }
         })()
@@ -61,9 +63,19 @@ export default function CheckInPage(){
 
     return (<View style={{flex: 1}}>
 
-        {/* <FlatList style={{flex: 0.8}}/> */}
+        <View style={{flex:0.1, justifyContent:"center"}}>
+            <Text style={[styles.title]}>Work Log History</Text>
+        </View>
 
-        <View style={{flex: 0.2}}>
+        <FlatList style={{flex: 0.7}}
+            data = {workLogs}
+            renderItem={(item)=><View style={styles.actionItem}>
+                <Text style={styles.actionItemText}>{new Date(item.item.timestamp).toLocaleString()}</Text>
+                <Text style={styles.actionItemText}>{item.item.action === "CHECKIN" ? "Checked In     " : "Checked Out"}</Text>
+            </View>}
+        />
+
+        <View style={{flex: 0.2, justifyContent:"center"}}>
             {status === "CHECKOUT" ? 
                 <Button title="Check In" onPress={()=>{setSubmit({...submit})}}/> 
                 :
@@ -73,3 +85,23 @@ export default function CheckInPage(){
 
     </View>)
 }
+
+const styles = StyleSheet.create({
+    actionItem: {
+        flexDirection:"row",
+        justifyContent:"space-between",
+        paddingTop:10,
+        paddingHorizontal:20
+    },
+    actionItemText:{
+        fontSize:16,
+        fontWeight:"bold"
+    },
+    title:{
+        fontSize:24,
+        fontWeight:"bold",
+        textAlign: "center",
+
+    }
+    
+})
