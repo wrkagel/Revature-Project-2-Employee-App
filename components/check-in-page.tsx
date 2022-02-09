@@ -1,5 +1,4 @@
-import axios from "axios";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Alert, Button, FlatList, StyleSheet, Text, View } from "react-native";
 import CurrentUserContext from "../contexts/current-user-context";
 import WorkLog from "../models/worklog";
@@ -11,6 +10,8 @@ export default function CheckInPage(){
     const [status, setStatus] = useState<"CHECKIN"|"CHECKOUT">("CHECKOUT");
     const [workLogs, setWorkLogs] = useState<WorkLog[]>([])
     const [submit, setSubmit] = useState<{}>();
+    const [refreshing, setRefreshing] = useState<boolean>(false);
+    const [run, setRun] = useState<{}>();
 
     const user = useContext(CurrentUserContext);
 
@@ -40,8 +41,9 @@ export default function CheckInPage(){
                     )
                 }
             }
+            setRefreshing(false);
         })()
-    }, [])
+    }, [run])
 
     useEffect(()=>{
         if (!submit) return;
@@ -60,6 +62,10 @@ export default function CheckInPage(){
 
     }, [submit])
 
+    function refresh() {
+        setRefreshing(true);
+        setRun({...run});
+    }
 
     return (<View style={{flex: 1}}>
 
@@ -69,6 +75,8 @@ export default function CheckInPage(){
 
         <FlatList style={{flex: 0.7}}
             data = {workLogs}
+            onRefresh={refresh}
+            refreshing={refreshing}
             renderItem={(item)=><View style={styles.actionItem}>
                 <Text style={styles.actionItemText}>{new Date(item.item.timestamp).toLocaleString()}</Text>
                 <Text style={styles.actionItemText}>{item.item.action === "CHECKIN" ? "Checked In   " : "Checked Out"}</Text>

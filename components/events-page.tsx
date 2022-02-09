@@ -8,6 +8,8 @@ import EventLineItem from "./event-line-item";
 export default function EventsPage(){
     const [events, setEvents] =  useState<Activity[]>([]);
     const [showCreate, setShowCreate] = useState<boolean>(false);
+    const [refreshing, setRefreshing] = useState<boolean>(false);
+    const [run, setRun] = useState<{}>();
 
     useEffect(() => {
         (async () => {
@@ -16,12 +18,19 @@ export default function EventsPage(){
                 setEvents(response.data);
             }
         })();
-    },[]);
+        setRefreshing(false);
+    },[run]);
 
+    function refresh() {
+        setRefreshing(true);
+        setRun({...run});
+    }
 
     return(<View style={styles.container}>
 
         <FlatList style={{flex:0.9}}
+            refreshing={refreshing}
+            onRefresh={refresh}
             keyExtractor={item => item.id}
             data={events}
             renderItem={({item, index}) => (
