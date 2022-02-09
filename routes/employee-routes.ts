@@ -28,6 +28,10 @@ export default class EmployeeRoutes {
         .catch((error) => {axiosErrorHandler(error)});
     }
 
-    
+    public static async getLatestWorkLogByEmployee(): Promise<AxiosResponse<(WorkLog & {fname:string, lname:string})[]> | void>{
+        return axios.get<(WorkLog & {fname:string, lname:string})[]>(`https://wk-revature-functions.azurewebsites.net/api/latest-worklog-query`)
+        .then((r) => r)
+        .catch((error) => {axiosErrorHandler(error)});
+    }
 
 }

@@ -1,7 +1,7 @@
 
 
 export default interface WorkLog{
-    wId: number;
+    id: number;
     action: "CHECKIN" | "CHECKOUT";
     timestamp: number;
 }

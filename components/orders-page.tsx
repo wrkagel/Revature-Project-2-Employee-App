@@ -6,7 +6,9 @@ import OrderItem from "./order-item";
 
 
 export default function OrdersPage(){
-    const [orders,setOrders] = useState<ServiceRequest[]>([])
+    const [orders,setOrders] = useState<ServiceRequest[]>([]);
+    const [refreshing, setRefreshing] = useState<boolean>(false);
+    const [run, setRun] = useState<{}>();
 
 
 
@@ -31,13 +33,20 @@ export default function OrdersPage(){
                 alert("not success");
             }
         })();
-    },[])
+        setRefreshing(false);
+    },[run])
 
+    function refresh() {
+        setRefreshing(true);
+        setRun({...run});
+    }
 
     return(<View>
         <FlatList 
         keyExtractor={(item)=>item.id}
         data={orders}
+        refreshing={refreshing}
+        onRefresh={refresh}
         renderItem={({item,index})=>
             <OrderItem item={item} orders={orders} setOrders={setOrders} index={index}/>
 
