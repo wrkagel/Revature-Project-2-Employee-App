@@ -15,16 +15,18 @@ export default function OrdersPage(){
             const response = await OrderRoutes.getOrders()
             if(response && response.status === 200){
                 const orders = response.data;
+                const priority = {"Ordered": 0, "Processing": 1, "Completed": 2, "Cancelled": 3};
                 orders.sort((o1, o2) => {
-                    if(o1.status === 'Ordered' && o2.status !== "Ordered") {
-                        return -1;
+
+                    const dif = priority[o1.status] - priority[o2.status];
+                
+                    if ( dif !== 0) {
+                        return dif;
                     }
-                    if(o2.status === 'Ordered' && o1.status !== "Ordered") {
-                        return 1;
-                    }
+
                     return o1.created - o2.created;
                 });
-                setOrders(response.data);
+                setOrders(orders);
             }else{
                 alert("not success");
             }
