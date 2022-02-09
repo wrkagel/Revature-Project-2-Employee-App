@@ -5,7 +5,7 @@ import Activity from "../models/activity";
 
 export default class EventRoutes {
 
-    private static address:string = "http://20.72.189.253:3000";
+    private static address:string = "http://20.75.185.122:3000";
 
     public static async getEvents(): Promise<AxiosResponse<Activity[]> | void> {
         return axios.get<Activity[]>(`${this.address}/activities`)

@@ -5,7 +5,7 @@ import ServiceRequest from "../models/service-request";
 
 export default class OrderRoutes{
 
-    private static address:string = "http://20.72.189.253:3000"
+    private static address:string = "http://20.75.185.122:3000"
 
     public static async getOrders(): Promise<AxiosResponse<ServiceRequest[]> | void> {
         return axios.get<ServiceRequest[]>(`${this.address}/servicerequests`)

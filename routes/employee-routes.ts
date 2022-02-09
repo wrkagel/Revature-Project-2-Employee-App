@@ -6,7 +6,7 @@ import WorkLog from "../models/worklog";
 
 export default class EmployeeRoutes {
     
-    private static address:string = "http://20.72.189.253:3000"
+    private static address:string = "http://20.75.185.122:3000"
 
     public static async logIn(loginPayload:{username:string, password:string}): Promise<AxiosResponse<Employee> | void> {
         
