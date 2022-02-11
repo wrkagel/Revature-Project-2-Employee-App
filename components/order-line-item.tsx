@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Button, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Button, FlatList, Pressable, StyleSheet, Text, View, Animated } from "react-native";
 import ServiceRequest from "../models/service-request";
 import OrderRoutes from "../routes/order-routes";
 
@@ -8,11 +8,13 @@ export default function OrderItem(props:{item:ServiceRequest,orders:ServiceReque
     const [expanded,setExpanded]= useState<boolean>(false)
     const [setProcessing, clickProcessing] = useState<{}>();
     const [setCompleted, clickCompleted] = useState<{}>();
+    
+    const formAnimation = useRef(new Animated.Value(0)).current;
 
     const {item, orders, index, setOrders} = props;
 
     useEffect(() => {
-        if(! setProcessing) {
+        if(!setProcessing) {
             return;
         }
         (async () => {
@@ -48,9 +50,28 @@ export default function OrderItem(props:{item:ServiceRequest,orders:ServiceReque
     const orderDate = new Date(props.item.created);
     const partialId = props.item.id.substring(props.item.id.length - 7, props.item.id.length)
 
+    function expand() {
+        setExpanded(true);
+        Animated.timing(formAnimation, {
+            toValue: 1,
+            duration:500,
+            useNativeDriver:true
+        }).start();
+    }
+
+    function contract() {
+        Animated.timing(formAnimation, {
+            toValue: 0,
+            duration:500,
+            useNativeDriver:true
+        }).start(() => {
+            setExpanded(false);
+        });
+    }
+
     return(
         <View>
-            <Pressable onPress={()=> setExpanded(!expanded)} style={styles.inlinePressable}>
+            <Pressable onPress={()=> !expanded ? expand() : contract()} style={styles.inlinePressable}>
                 <View style={styles.orderLineView}>
                     <Text style={styles.inlineText}>OrderID: <Text style={styles.textBold}>{partialId}</Text></Text>
                     <Text style={styles.inlineRightAlign}>{props.item.room}</Text>
@@ -60,7 +81,7 @@ export default function OrderItem(props:{item:ServiceRequest,orders:ServiceReque
                     <Text style={styles.inlineRightAlign}>{orderDate.toLocaleDateString()} {orderDate.toLocaleTimeString()}</Text>
                 </View>
             </Pressable>
-            {expanded && <View>
+            {expanded && <Animated.View style={{transform:[{scaleY:formAnimation}]}}>
                 <Text style={styles.expandedText}><Text style={styles.textBold}>Room: </Text>{props.item.room}</Text>
                 <Text style={styles.expandedText}><Text style={styles.textBold}>Created: </Text>{new Date(props.item.created).toLocaleString()}</Text>
                 <Text style={[styles.textBold, {alignSelf:"center"}]}>Order Details</Text>
@@ -72,7 +93,7 @@ export default function OrderItem(props:{item:ServiceRequest,orders:ServiceReque
                     <Button title="Set Processing" onPress={() => clickProcessing({...setProcessing})} />
                     <Button title="Set Completed" onPress={() => clickCompleted({...setCompleted})}/>
                 </View>
-            </View>}
+            </Animated.View>}
         </View>
 
     )
