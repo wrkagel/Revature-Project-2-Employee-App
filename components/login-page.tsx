@@ -81,5 +81,6 @@ const styles = StyleSheet.create({
         width: 120,
         height: 40,
         textAlign:"center",
+        marginVertical:5,
     }
 });
