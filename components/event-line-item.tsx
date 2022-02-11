@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import {View, Pressable, Text} from "react-native";
+import { useEffect, useRef, useState } from "react";
+import {View, Pressable, Text, Animated} from "react-native";
 import Activity from "../models/activity";
 import EventRoutes from "../routes/event-routes";
 
@@ -12,6 +12,8 @@ export default function EventLineItem(props: Activity & {events:Activity[]} & {s
     const [cancelEvent, setCancelEvent] = useState<{}>();
 
     const {events, setEvents, index} = props;
+
+    const formAnimation = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         if(!cancelEvent) {
@@ -29,20 +31,40 @@ export default function EventLineItem(props: Activity & {events:Activity[]} & {s
         })();
     },[cancelEvent])
 
+    function expand() {
+        setExpanded(true);
+        Animated.timing(formAnimation, {
+            toValue: 1,
+            duration:500,
+            useNativeDriver:true
+        }).start();
+    }
 
-    return(
-    <View style={{flexDirection:"row", justifyContent:"space-between"}}>
+    function contract() {
+        Animated.timing(formAnimation, {
+            toValue: 0,
+            duration:500,
+            useNativeDriver:true
+        }).start(() => {
+            setExpanded(false);
+        });
+    }
+
+    return(<View style={{flexDirection:"row", justifyContent:"space-between"}}>
         <View style={{flex:0.7}}>
-            <Pressable onPress={()=> setExpanded(!expanded)} style={{flex:1}}>
+            <Pressable onPress={()=> {
+                    !expanded ? expand() : contract();
+                }} 
+                style={{flex:1}}>
                 <Text style={{fontSize:20}}>{props.title}</Text>
                 <Text style={{fontSize:20}}>{new Date(props.startTime).toLocaleString()}</Text>
             </Pressable>
-            {expanded && <View>
+            {expanded && <Animated.View style={{transform:[{scaleY:formAnimation}]}}>
                 <Text>{props.desc}</Text>
                 <Text>Ends: {new Date(props.endTime).toLocaleString()}</Text>
                 <Text>Location: {props.location}</Text>
                 <Text>Status: {props.status}</Text>
-            </View>}
+            </Animated.View>}
         </View>
         <Pressable style={{flex:0.3, justifyContent:"center"}} onPress={() => setCancelEvent({...cancelEvent})}>
             <Text style={{color:"white", fontSize:20, backgroundColor:"red"}}>Cancel Event</Text>
