@@ -29,7 +29,7 @@ export default function ProblemsPage(){
     }
 
 
-    return(<View>
+    return(<View style={{flex:1}}>
 
         <FlatList 
         keyExtractor={(item)=>item.id}
