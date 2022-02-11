@@ -89,10 +89,22 @@ export default function OrderItem(props:{item:ServiceRequest,orders:ServiceReque
                     renderItem={({item}) => {
                         return(<Text style={styles.expandedText}>{item.amount} x {item.desc}</Text>)
                     }}/>
-                <View style={styles.buttonView}>
-                    <Button title="Set Processing" onPress={() => clickProcessing({...setProcessing})} />
-                    <Button title="Set Completed" onPress={() => clickCompleted({...setCompleted})}/>
-                </View>
+                {props.item.status === "Cancelled" ?
+                    <></>
+                    : props.item.status === "Completed" ?
+                     <View style={styles.buttonView}>
+                        <Button title="Re-Open Order (Processing)" onPress={() => clickProcessing({...setProcessing})} />
+                    </View>
+                    : props.item.status === "Processing" ?
+                    <View style={styles.buttonView}>
+                        <Button title="Set Completed" onPress={() => clickCompleted({...setCompleted})}/>
+                    </View>
+                    :    
+                    <View style={styles.buttonView}>
+                        <Button title="Set Processing" onPress={() => clickProcessing({...setProcessing})} />   
+                        <Button title="Set Completed" onPress={() => clickCompleted({...setCompleted})}/>
+                    </View>
+                }
             </Animated.View>}
         </View>
 
