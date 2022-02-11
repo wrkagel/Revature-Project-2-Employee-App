@@ -15,6 +15,9 @@ export default function EventsPage(){
         (async () => {
             const response = await EventRoutes.getEvents();
             if(response && response.status === 200) {
+                response.data.sort((a,b)=>{
+                    return a.startTime - b.startTime;
+                })
                 setEvents(response.data);
             }
         })();
@@ -38,8 +41,8 @@ export default function EventsPage(){
             )}
         />
         <View style={{flex:0.1}}>
-            <Pressable onPress={() => setShowCreate(true)} style={{flex:1, backgroundColor:"#447799", justifyContent:"center"}}>
-                <Text style={{textAlign:"center", fontSize:20}}>Create Event</Text>
+            <Pressable onPress={() => setShowCreate(true)} style={styles.createButton}>
+                <Text style={styles.createText}>Create Event</Text>
             </Pressable>
         </View>
         {showCreate && <EventCreationForm 
@@ -54,7 +57,16 @@ export default function EventsPage(){
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#dedede'
-    }
+        backgroundColor: '#efefef'
+    },
+    createButton:{flex:1, 
+        backgroundColor:"#447799", 
+        justifyContent:"center"
+    },
+    createText:{
+        textAlign:"center",
+        fontSize:20,
+        color:"white",
+    },
 
 })

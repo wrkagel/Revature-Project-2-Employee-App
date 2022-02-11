@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Animated, Button, FlatList, Pressable, ScrollView, Text, View } from "react-native";
+import { Button, FlatList, Pressable, StyleSheet, Text, View, Animated } from "react-native";
 import ServiceRequest from "../models/service-request";
 import OrderRoutes from "../routes/order-routes";
 
@@ -47,6 +47,9 @@ export default function OrderItem(props:{item:ServiceRequest,orders:ServiceReque
         })()
     },[setCompleted])
 
+    const orderDate = new Date(props.item.created);
+    const partialId = props.item.id.substring(props.item.id.length - 7, props.item.id.length)
+
     function expand() {
         setExpanded(true);
         Animated.timing(formAnimation, {
@@ -68,27 +71,64 @@ export default function OrderItem(props:{item:ServiceRequest,orders:ServiceReque
 
     return(
         <View>
-            <Pressable onPress={()=> {!expanded ? expand() : contract()}} style={{flex:1}}>
-                <Text style={{fontSize:20}}>{props.item.id}</Text>
-                <Text style={{fontSize:20}}>{props.item.status}</Text>
+            <Pressable onPress={()=> !expanded ? expand() : contract()} style={styles.inlinePressable}>
+                <View style={styles.orderLineView}>
+                    <Text style={styles.inlineText}>OrderID: <Text style={styles.textBold}>{partialId}</Text></Text>
+                    <Text style={styles.inlineRightAlign}>{props.item.room}</Text>
+                </View>
+                <View style={styles.orderLineView}>
+                    <Text style={styles.inlineText}>Status:   <Text style={styles.textBold}>{props.item.status}</Text></Text>
+                    <Text style={styles.inlineRightAlign}>{orderDate.toLocaleDateString()} {orderDate.toLocaleTimeString()}</Text>
+                </View>
             </Pressable>
             {expanded && <Animated.View style={{transform:[{scaleY:formAnimation}]}}>
-                <Text>{props.item.room}</Text>
-                <Text>Created: {new Date(props.item.created).toLocaleString()}</Text>
+                <Text style={styles.expandedText}><Text style={styles.textBold}>Room: </Text>{props.item.room}</Text>
+                <Text style={styles.expandedText}><Text style={styles.textBold}>Created: </Text>{new Date(props.item.created).toLocaleString()}</Text>
+                <Text style={[styles.textBold, {alignSelf:"center"}]}>Order Details</Text>
                 <FlatList data={item.requestedOfferings} keyExtractor={(item) => item.desc}
                     renderItem={({item}) => {
-                        return(<Text>{item.desc} * {item.amount} </Text>)
+                        return(<Text style={styles.expandedText}>{item.amount} x {item.desc}</Text>)
                     }}/>
-                <View style={{flexDirection:"row"}}>
+                <View style={styles.buttonView}>
                     <Button title="Set Processing" onPress={() => clickProcessing({...setProcessing})} />
                     <Button title="Set Completed" onPress={() => clickCompleted({...setCompleted})}/>
                 </View>
             </Animated.View>}
         </View>
 
-
-
-
-
     )
 }
+
+const styles = StyleSheet.create({
+    inlinePressable:{
+        margin:8,
+        justifyContent:"space-between",
+    },
+    orderLineView:{
+        flex:1,
+        flexDirection:"row",
+    },
+    inlineText:{
+        fontSize:16,
+        flex:.5,
+        marginHorizontal:20,
+    },
+    inlineRightAlign:{
+        fontSize:16,
+        flex:.5,
+        textAlign:"right",
+        marginRight:30,
+    },
+    expandedText:{
+        marginLeft:"15%",
+    },
+    textBold:{
+        fontWeight:"bold",
+    },
+    buttonView:{
+        flexDirection:"row",
+        justifyContent:"space-around",
+        marginVertical:5,
+        marginHorizontal:15,
+    },
+});

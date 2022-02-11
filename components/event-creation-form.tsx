@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Pressable, Text, TextInput, View } from "react-native";
+import { Button, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import DatePicker from 'react-native-modal-datetime-picker'
 import Activity from "../models/activity";
 import EventRoutes from "../routes/event-routes";
@@ -49,20 +49,24 @@ export default function EventCreationForm(props:{setShowCreate:Function, events:
         }
     }, [submit])
 
-    return(<View style={{position:"absolute", height:"100%", width:"100%", backgroundColor:"#dedede"}}>
-        <View style={{flex:1}}>
-            <TextInput placeholder="Title" onChangeText={(text) => setTitle(text)}/>
-            <TextInput placeholder="Location" onChangeText={(text) => setLocation(text)}/>
-            <TextInput style={{flex:1}} multiline placeholder="Description" onChangeText={(text) => setDesc(text)}/>
-            <Pressable onPress={()=> setOpenStartPicker(true)} style={{backgroundColor:"lightblue"}} >
-                <Text>Choose Start Time</Text>
-            </Pressable>
-            <Text>{Boolean(startTime) && new Date(startTime ?? 0).toLocaleString()}</Text>
-            <Pressable onPress={() => setOpenEndPicker(true)} style={{backgroundColor:"lightblue"}}>
-                <Text>Choose End Time</Text>
-            </Pressable>
-            <Text>{Boolean(endTime) && new Date(endTime ?? 0).toLocaleString()}</Text>
-            <View style={{flexDirection:"row", justifyContent:"space-evenly"}}>
+    return(<View style={styles.wrapper}>
+        <View style={styles.content}>
+            <TextInput style={styles.textinput} placeholder="   Title" onChangeText={(text) => setTitle(text)}/>
+            <TextInput style={styles.textinput} placeholder="   Location" onChangeText={(text) => setLocation(text)}/>
+            <TextInput style={styles.descriptionInput} multiline placeholder="   Description" onChangeText={(text) => setDesc(text)}/>
+            <View style={styles.pressableView}>
+                <Pressable onPress={()=> setOpenStartPicker(true)} style={styles.pressable} >
+                    <Text style={styles.pressableText}>Choose Start Time</Text>
+                </Pressable>
+                <Text style={styles.selectedTimeText}>{Boolean(startTime) && new Date(startTime ?? 0).toLocaleString()}</Text>
+            </View>
+            <View style={styles.pressableView}>
+                <Pressable onPress={() => setOpenEndPicker(true)} style={styles.pressable}>
+                    <Text style={styles.pressableText}>Choose End Time</Text>
+                </Pressable>
+                <Text style={styles.selectedTimeText}>{Boolean(endTime) && new Date(endTime ?? 0).toLocaleString()}</Text>
+            </View>
+            <View style={styles.buttonsView}>
                 <Button title="Cancel" onPress={() => setShowCreate(false)}/>
                 <Button title="Submit" onPress={() => setSubmit({...submit})}/>
             </View>
@@ -89,3 +93,56 @@ export default function EventCreationForm(props:{setShowCreate:Function, events:
         />
     </View>)
 }
+
+const styles = StyleSheet.create({
+    wrapper:{
+        position:"absolute",
+        height:"100%",
+        width:"100%", 
+        backgroundColor:"#efefef",
+    },
+    content:{
+        flex:1,
+        marginHorizontal: 25,
+    },
+    pressableView:{
+        flex:.1,
+        flexDirection:"row",
+        justifyContent:"space-between",
+        marginBottom:25,
+        alignItems:"center"
+    },
+    pressable:{        
+        height:40,
+        width:150,
+        backgroundColor:"#3988e7e0",     
+        alignItems:"center",
+        justifyContent:"center",
+    },
+    pressableText:{
+        color:"white",
+    },
+    buttonsView:{
+        flexDirection:"row", 
+        justifyContent:"space-evenly",
+        marginBottom:15,
+    },
+    textinput:{
+        borderWidth:1,
+        paddingHorizontal:10,
+        height:50,
+        marginVertical:10,
+        borderColor:"darkgray"
+    },
+    descriptionInput:{
+        flex:1,
+        paddingHorizontal:10,
+        borderWidth:1,
+        marginBottom:20,
+        borderColor:"darkgray"
+    },
+    selectedTimeText:{
+        fontWeight:"bold",
+        fontSize:15,
+    },
+});

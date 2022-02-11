@@ -1,5 +1,6 @@
+
 import { useEffect, useRef, useState } from "react";
-import {View, Pressable, Text, Animated} from "react-native";
+import {View, Pressable, Text, StyleSheet, Alert, Animated} from "react-native";
 import Activity from "../models/activity";
 import EventRoutes from "../routes/event-routes";
 
@@ -18,7 +19,8 @@ export default function EventLineItem(props: Activity & {events:Activity[]} & {s
     useEffect(() => {
         if(!cancelEvent) {
             return;
-        }
+        };
+
         (async () => {
             const response = await EventRoutes.cancelEvent(props.id);
             if(response && response.status === 200) {
@@ -50,24 +52,70 @@ export default function EventLineItem(props: Activity & {events:Activity[]} & {s
         });
     }
 
-    return(<View style={{flexDirection:"row", justifyContent:"space-between"}}>
+    function cancelConfirm(){        
+        
+        Alert.alert("Cancel Event Confirmation", "Are you sure you want to cancel this event?", [
+            {text:"Yes, Cancel", onPress: () => setCancelEvent({...cancelEvent})},
+            {text:"Don't Cancel", style: "cancel"}
+        ]                    
+        );
+    }
+
+
+    return(
+    <View style={styles.container}>
         <View style={{flex:0.7}}>
-            <Pressable onPress={()=> {
-                    !expanded ? expand() : contract();
-                }} 
-                style={{flex:1}}>
-                <Text style={{fontSize:20}}>{props.title}</Text>
-                <Text style={{fontSize:20}}>{new Date(props.startTime).toLocaleString()}</Text>
+            <Pressable onPress={()=> !expanded ? expand() : contract()} style={styles.inlinePressable}>
+                <Text style={styles.inlineText}>{props.title}</Text>
+                <Text style={styles.inlineText}>{new Date(props.startTime).toLocaleString()}</Text>
             </Pressable>
             {expanded && <Animated.View style={{transform:[{scaleY:formAnimation}]}}>
-                <Text>{props.desc}</Text>
-                <Text>Ends: {new Date(props.endTime).toLocaleString()}</Text>
-                <Text>Location: {props.location}</Text>
-                <Text>Status: {props.status}</Text>
+                <Text style={[styles.expandedText, {marginLeft:15}]}>{props.desc}</Text>
+                <Text style={styles.expandedText}><Text style={styles.expandedTextBold}>Starts:</Text> {new Date(props.startTime).toLocaleString()}</Text>
+                <Text style={styles.expandedText}><Text style={styles.expandedTextBold}>Ends:</Text> {new Date(props.endTime).toLocaleString()}</Text>
+                <Text style={styles.expandedText}><Text style={styles.expandedTextBold}>Location:</Text> {props.location}</Text>
+                <Text style={styles.expandedText}><Text style={styles.expandedTextBold}>Status:</Text> {props.status}</Text>
             </Animated.View>}
         </View>
-        <Pressable style={{flex:0.3, justifyContent:"center"}} onPress={() => setCancelEvent({...cancelEvent})}>
-            <Text style={{color:"white", fontSize:20, backgroundColor:"red"}}>Cancel Event</Text>
+        {props.status === "On Schedule" && 
+        <Pressable style={styles.cancelPressable} onPress={()=>cancelConfirm()}>
+            <Text style={styles.cancelText}>Cancel Event</Text>
         </Pressable>
+        }
     </View>)
 }
+
+const styles = StyleSheet.create({
+    container:{
+        flexDirection:"row",
+        justifyContent:"space-between",
+    },
+    inlinePressable:{
+        marginVertical:10,
+    },
+    inlineText:{
+        fontSize:18,
+        fontWeight:"bold",
+        marginLeft:15
+    },
+    expandedView:{},
+    expandedText:{
+        marginHorizontal:8,
+        marginVertical:3,
+    },
+    expandedTextBold:{
+        fontWeight:"bold",
+    },
+    cancelPressable:{
+        flex:0.3, 
+        justifyContent:"center",
+        marginRight:8,
+    },
+    cancelText:{
+        color:"white", 
+        fontSize:20, 
+        backgroundColor:"red",
+        textAlign:"center",
+    },
+
+});

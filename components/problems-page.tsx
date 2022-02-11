@@ -28,8 +28,18 @@ export default function ProblemsPage(){
         
     }
 
+    problems.sort((a, b) => {
+        if (a.status === "reviewed" && b.status !== "reviewed"){
+            return 1;
+        }
+        else if  ( a.status === b.status ){
+            return a.submittedTime - b.submittedTime;
+        }
+        else return -1;    
+    });
 
-    return(<View>
+
+    return(<View style={{flex:1}}>
 
         <FlatList 
         keyExtractor={(item)=>item.id}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import Problem from "../models/problem";
 import ProblemRoutes from "../routes/problem-routes";
 
@@ -24,19 +24,44 @@ export default function ProblemLineItem(props:{item:Problem,problems:Problem[],i
     },[reviewed])
     
     return(
-        <View>
-            <Text>{props.item.category}</Text>
-            <Text>{new Date(props.item.submittedTime).toLocaleString()}</Text>
-            <Text>{props.item.desc}</Text>
-            <Text>{props.item.status}</Text>
-            <Pressable onPress={()=>setReviewed({...reviewed})}  >
-                <Text>Mark as reviewed</Text>
-            </Pressable>
+        <View style={styles.entryContainer}>
+            <Text style={styles.bodyText}><Text style={styles.boldText}>Category: </Text>{props.item.category}</Text>
+            <Text style={styles.bodyText}><Text style={styles.boldText}>Report Date: </Text>{new Date(props.item.submittedTime).toLocaleString()}</Text>
+            <Text style={styles.bodyText}><Text style={styles.boldText}>Details: </Text>{props.item.desc}</Text>
+            <Text style={[styles.bodyText, styles.boldText]}>Status: {props.item.status}</Text>
+            {props.item.status !== "reviewed" ? <Pressable style={styles.button} onPress={()=>setReviewed({...reviewed})}  >
+                <Text style={styles.buttonText}>Mark as reviewed</Text>
+            </Pressable> 
+            :
+            <View style={{padding:8}}></View>
+            }
         </View>
-
-
-
-
     )
 
 }
+
+const styles = StyleSheet.create({
+    entryContainer:{
+        borderTopColor:"black",
+        borderTopWidth:1,
+        borderStyle:"solid"
+    },
+    boldText:{
+        fontWeight:"bold"
+    },
+    bodyText:{
+        marginHorizontal:10,
+    },
+    button:{
+        padding:8,
+        backgroundColor:"#3377e0",
+        alignSelf:"center",
+        marginTop:5,
+        marginBottom:15,
+        width:150,
+    },
+    buttonText:{
+        textAlign:"center",
+        color:"white"
+    },
+});
