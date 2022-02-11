@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { StyleSheet, StatusBar, Button } from "react-native";
+import { StyleSheet, StatusBar, Button, View } from "react-native";
 import CheckInPage from "./components/check-in-page";
 import EmployeeStatusPage from "./components/employee-status-page";
 import EventsPage from "./components/events-page";
@@ -50,10 +50,12 @@ export default function App() {
         <NavigationContainer>
           <Tab.Navigator screenOptions={{
             headerRight: () => {
-              return <Button title="Logout" onPress={async () => {
+              return (<View style={styles.logoutView}>
+              <Button title="Logout" onPress={async () => {
                 await AsyncStorageLib.removeItem("user");
                 setShowLogin(true);
               }} />
+              </View>)
             }
           }}>
             <Tab.Screen
@@ -102,5 +104,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  logoutView:{
+    marginRight: 10,
   },
 });

@@ -24,7 +24,7 @@ export default function ProblemLineItem(props:{item:Problem,problems:Problem[],i
     },[reviewed])
     
     return(
-        <View>
+        <View style={styles.entryContainer}>
             <Text style={styles.bodyText}><Text style={styles.boldText}>Category: </Text>{props.item.category}</Text>
             <Text style={styles.bodyText}><Text style={styles.boldText}>Report Date: </Text>{new Date(props.item.submittedTime).toLocaleString()}</Text>
             <Text style={styles.bodyText}><Text style={styles.boldText}>Details: </Text>{props.item.desc}</Text>
@@ -41,6 +41,11 @@ export default function ProblemLineItem(props:{item:Problem,problems:Problem[],i
 }
 
 const styles = StyleSheet.create({
+    entryContainer:{
+        borderTopColor:"black",
+        borderTopWidth:1,
+        borderStyle:"solid"
+    },
     boldText:{
         fontWeight:"bold"
     },
@@ -50,7 +55,7 @@ const styles = StyleSheet.create({
     button:{
         padding:8,
         backgroundColor:"#3377e0",
-        marginHorizontal:10,
+        alignSelf:"center",
         marginTop:5,
         marginBottom:15,
         width:150,

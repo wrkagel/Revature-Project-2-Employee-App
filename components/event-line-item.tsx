@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {View, Pressable, Text, StyleSheet} from "react-native";
+import {View, Pressable, Text, StyleSheet, Alert} from "react-native";
 import Activity from "../models/activity";
 import EventRoutes from "../routes/event-routes";
 
@@ -16,7 +16,8 @@ export default function EventLineItem(props: Activity & {events:Activity[]} & {s
     useEffect(() => {
         if(!cancelEvent) {
             return;
-        }
+        };
+
         (async () => {
             const response = await EventRoutes.cancelEvent(props.id);
             if(response && response.status === 200) {
@@ -29,6 +30,15 @@ export default function EventLineItem(props: Activity & {events:Activity[]} & {s
         })();
     },[cancelEvent])
 
+    function cancelConfirm(){        
+        
+        Alert.alert("Cancel Event Confirmation", "Are you sure you want to cancel this event?", [
+            {text:"Yes, Cancel", onPress: () => setCancelEvent({...cancelEvent})},
+            {text:"Don't Cancel", style: "cancel"}
+        ]                    
+        );
+    }
+
 
     return(
     <View style={styles.container}>
@@ -38,15 +48,18 @@ export default function EventLineItem(props: Activity & {events:Activity[]} & {s
                 <Text style={styles.inlineText}>{new Date(props.startTime).toLocaleString()}</Text>
             </Pressable>
             {expanded && <View>
-                <Text style={styles.expandedText}>{props.desc}</Text>
+                <Text style={[styles.expandedText, {marginLeft:15}]}>{props.desc}</Text>
+                <Text style={styles.expandedText}><Text style={styles.expandedTextBold}>Starts:</Text> {new Date(props.startTime).toLocaleString()}</Text>
                 <Text style={styles.expandedText}><Text style={styles.expandedTextBold}>Ends:</Text> {new Date(props.endTime).toLocaleString()}</Text>
                 <Text style={styles.expandedText}><Text style={styles.expandedTextBold}>Location:</Text> {props.location}</Text>
                 <Text style={styles.expandedText}><Text style={styles.expandedTextBold}>Status:</Text> {props.status}</Text>
             </View>}
         </View>
-        <Pressable style={styles.cancelPressable} onPress={() => setCancelEvent({...cancelEvent})}>
+        {props.status === "On Schedule" && 
+        <Pressable style={styles.cancelPressable} onPress={()=>cancelConfirm()}>
             <Text style={styles.cancelText}>Cancel Event</Text>
         </Pressable>
+        }
     </View>)
 }
 
@@ -61,7 +74,7 @@ const styles = StyleSheet.create({
     inlineText:{
         fontSize:18,
         fontWeight:"bold",
-        textAlign:"center",
+        marginLeft:15
     },
     expandedView:{},
     expandedText:{

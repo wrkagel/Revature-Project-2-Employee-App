@@ -15,6 +15,9 @@ export default function EventsPage(){
         (async () => {
             const response = await EventRoutes.getEvents();
             if(response && response.status === 200) {
+                response.data.sort((a,b)=>{
+                    return a.startTime - b.startTime;
+                })
                 setEvents(response.data);
             }
         })();
