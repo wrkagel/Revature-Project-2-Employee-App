@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
 import ServiceRequest from "../models/service-request";
 import OrderRoutes from "../routes/order-routes";
-import OrderItem from "./order-item";
+import OrderItem from "./order-line-item";
 
 
 export default function OrdersPage(){
