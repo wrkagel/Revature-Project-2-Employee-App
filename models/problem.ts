@@ -4,4 +4,5 @@ export default interface Problem {
   submittedTime: number;
   desc: string;
   status: "new" | "reviewed";
+  photoLink: string;
 }
