@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Problem from "../models/problem";
 import ProblemRoutes from "../routes/problem-routes";
 
@@ -29,6 +29,7 @@ export default function ProblemLineItem(props:{item:Problem,problems:Problem[],i
             <Text style={styles.bodyText}><Text style={styles.boldText}>Report Date: </Text>{new Date(props.item.submittedTime).toLocaleString()}</Text>
             <Text style={styles.bodyText}><Text style={styles.boldText}>Details: </Text>{props.item.desc}</Text>
             <Text style={[styles.bodyText, styles.boldText]}>Status: {props.item.status}</Text>
+            {Boolean(props.item.photoLink) && <Image source={{uri: props.item.photoLink}} style={styles.image}/>}
             {props.item.status !== "reviewed" ? <Pressable style={styles.button} onPress={()=>setReviewed({...reviewed})}  >
                 <Text style={styles.buttonText}>Mark as reviewed</Text>
             </Pressable> 
@@ -64,4 +65,9 @@ const styles = StyleSheet.create({
         textAlign:"center",
         color:"white"
     },
+    image:{
+        width:200,
+        height:200,
+        marginHorizontal:10
+    }
 });
