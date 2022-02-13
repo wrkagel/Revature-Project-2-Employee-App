@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Dimensions, Image, Pressable, StyleSheet, Text, View, Button } from "react-native";
+import { Dimensions, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Problem from "../models/problem";
 import ProblemRoutes from "../routes/problem-routes";
 
